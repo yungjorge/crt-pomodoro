@@ -5,12 +5,20 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 // ==================== TYPES ====================
 type TimerPhase = 'focus' | 'break' | 'longBreak';
 type TimerStatus = 'idle' | 'running' | 'paused';
+type ThemeId = 'crt-retro' | 'old-mac' | 'digital-clock' | 'windows-xp' | 'cyberpunk' | 'modern-sleek';
+type ColorMode = 'dark' | 'light';
 
 interface Settings {
-  focusDuration: number;      // minutes, default 25
-  breakDuration: number;      // minutes, default 5
-  longBreakDuration: number;  // minutes, default 15
-  sessionsUntilLongBreak: number; // default 4
+  focusDuration: number;
+  breakDuration: number;
+  longBreakDuration: number;
+  sessionsUntilLongBreak: number;
+}
+
+interface ThemeMeta {
+  id: ThemeId;
+  label: string;
+  emoji: string;
 }
 
 // ==================== CONSTANTS ====================
@@ -20,6 +28,15 @@ const DEFAULT_SETTINGS: Settings = {
   longBreakDuration: 15,
   sessionsUntilLongBreak: 4,
 };
+
+const THEMES: ThemeMeta[] = [
+  { id: 'crt-retro', label: 'CRT Retro', emoji: '📺' },
+  { id: 'old-mac', label: 'Old Mac', emoji: '🖥️' },
+  { id: 'digital-clock', label: 'Digital', emoji: '⏰' },
+  { id: 'windows-xp', label: 'Win XP', emoji: '🪟' },
+  { id: 'cyberpunk', label: 'Cyberpunk', emoji: '🌆' },
+  { id: 'modern-sleek', label: 'Modern', emoji: '✨' },
+];
 
 // ==================== AUDIO ====================
 function playBeep(frequency: number, duration: number, type: OscillatorType = 'square', volume: number = 0.1) {
@@ -35,55 +52,115 @@ function playBeep(frequency: number, duration: number, type: OscillatorType = 's
     gain.connect(ctx.destination);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration);
-  } catch {
-    // Audio not available
-  }
+  } catch { /* Audio not available */ }
 }
 
-function playTick() {
-  playBeep(800, 0.05, 'square', 0.03);
-}
-
+function playTick() { playBeep(800, 0.05, 'square', 0.03); }
 function playPhaseComplete() {
   setTimeout(() => playBeep(523, 0.15, 'square', 0.1), 0);
   setTimeout(() => playBeep(659, 0.15, 'square', 0.1), 150);
   setTimeout(() => playBeep(784, 0.2, 'square', 0.1), 300);
 }
-
-function playClick() {
-  playBeep(200, 0.03, 'square', 0.05);
-}
+function playClick() { playBeep(200, 0.03, 'square', 0.05); }
 
 // ==================== PIXEL TOMATO SVG ====================
-function PixelTomato({ status }: { status: TimerStatus; phase: TimerPhase }) {
-  const animClass = status === 'running' ? 'tomato-bounce' : status === 'paused' ? '' : '';
+function PixelTomato({ status, phase }: { status: TimerStatus; phase: TimerPhase }) {
+  const animClass = status === 'running' ? 'tomato-bounce' : '';
 
   return (
     <div className={`${animClass} inline-block`} style={{ imageRendering: 'pixelated' }}>
       <svg width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        {/* Leaf/stem */}
         <rect x="7" y="0" width="2" height="3" fill="#39ff14" />
-        {/* Tomato body */}
         <rect x="3" y="3" width="10" height="10" fill="#ff2d2d" />
         <rect x="2" y="4" width="1" height="8" fill="#ff2d2d" />
         <rect x="13" y="4" width="1" height="8" fill="#ff2d2d" />
         <rect x="4" y="2" width="8" height="2" fill="#ff2d2d" />
         <rect x="5" y="1" width="6" height="1" fill="#cc0000" />
-        {/* Highlight */}
         <rect x="5" y="5" width="2" height="2" fill="#ff6b6b" />
         <rect x="6" y="3" width="2" height="1" fill="#ff6b6b" />
-        {/* Stem detail */}
         <rect x="6" y="2" width="1" height="1" fill="#cc0000" />
         <rect x="9" y="1" width="1" height="1" fill="#cc0000" />
-        {/* Eyes */}
         <rect x="6" y="7" width="1" height="1" fill="#0a0a0a" />
         <rect x="9" y="7" width="1" height="1" fill="#0a0a0a" />
-        {/* Mouth */}
         <rect x="6" y="10" width="4" height="1" fill="#0a0a0a" />
         <rect x="7" y="11" width="2" height="1" fill="#0a0a0a" />
-        {/* Leaf glow */}
         <rect x="7" y="1" width="2" height="1" fill="#39ff14" opacity="0.6" />
       </svg>
+    </div>
+  );
+}
+
+// ==================== THEME PICKER ====================
+function ThemePicker({
+  theme,
+  mode,
+  onThemeChange,
+  onModeToggle,
+}: {
+  theme: ThemeId;
+  mode: ColorMode;
+  onThemeChange: (t: ThemeId) => void;
+  onModeToggle: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div style={{ marginTop: '16px' }}>
+      <button
+        className="pixel-btn"
+        onClick={() => { setOpen(!open); playClick(); }}
+        style={{ fontSize: 'var(--font-size-xs)', gap: '8px' }}
+      >
+        🎨 THEMES
+      </button>
+
+      {open && (
+        <div
+          className="pixel-border pixel-border-inner"
+          style={{
+            marginTop: '12px',
+            fontSize: 'var(--font-size-xs)',
+            padding: '16px',
+          }}
+        >
+          {/* Light / Dark toggle */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '14px',
+            paddingBottom: '12px',
+            borderBottom: '2px solid var(--border-color)',
+          }}>
+            <span style={{ color: 'var(--text)' }}>
+              {mode === 'dark' ? '🌙 DARK' : '☀️ LIGHT'}
+            </span>
+            <button
+              className={`mode-toggle ${mode}`}
+              onClick={() => { onModeToggle(); playClick(); }}
+              title="Toggle light/dark mode"
+            />
+          </div>
+
+          {/* Theme cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+            gap: '8px',
+          }}>
+            {THEMES.map((t) => (
+              <button
+                key={t.id}
+                className={`theme-card ${theme === t.id ? 'active' : ''}`}
+                onClick={() => { onThemeChange(t.id); playClick(); }}
+              >
+                <div style={{ fontSize: '18px', marginBottom: '4px' }}>{t.emoji}</div>
+                <div>{t.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -101,56 +178,33 @@ function SettingsPanel({
   const [open, setOpen] = useState(false);
 
   const update = (key: keyof Settings, delta: number) => {
-    const newVal = Math.max(1, Math.min(key === 'focusDuration' ? 60 : key === 'sessionsUntilLongBreak' ? 10 : 30, settings[key] + delta));
+    const maxVal = key === 'focusDuration' ? 60 : key === 'sessionsUntilLongBreak' ? 10 : 30;
+    const newVal = Math.max(1, Math.min(maxVal, settings[key] + delta));
     playClick();
     onSettingsChange({ ...settings, [key]: newVal });
   };
 
   return (
     <div style={{ marginTop: '16px' }}>
-      <button className="pixel-btn" onClick={() => { setOpen(!open); playClick(); }} style={{ fontSize: '7px' }}>
-        [ SETTINGS ]
+      <button
+        className="pixel-btn"
+        onClick={() => { setOpen(!open); playClick(); }}
+        style={{ fontSize: 'var(--font-size-xs)' }}
+      >
+        ⚙️ SETTINGS
       </button>
 
       {open && (
-        <div className="pixel-border pixel-border-inner" style={{ marginTop: '12px', fontSize: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span>FOCUS (min)</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button className="pixel-btn" onClick={() => update('focusDuration', -1)} style={{ padding: '4px 8px', fontSize: '8px' }}>-</button>
-              <span style={{ minWidth: '30px', textAlign: 'center' }}>{settings.focusDuration}</span>
-              <button className="pixel-btn" onClick={() => update('focusDuration', 1)} style={{ padding: '4px 8px', fontSize: '8px' }}>+</button>
-            </div>
-          </div>
+        <div
+          className="pixel-border pixel-border-inner"
+          style={{ marginTop: '12px', fontSize: 'var(--font-size-sm)' }}
+        >
+          <Row label="FOCUS (min)" value={settings.focusDuration} onMinus={() => update('focusDuration', -1)} onPlus={() => update('focusDuration', 1)} />
+          <Row label="BREAK (min)" value={settings.breakDuration} onMinus={() => update('breakDuration', -1)} onPlus={() => update('breakDuration', 1)} />
+          <Row label="LONG BREAK" value={settings.longBreakDuration} onMinus={() => update('longBreakDuration', -1)} onPlus={() => update('longBreakDuration', 1)} />
+          <Row label="SESSIONS/ROUND" value={settings.sessionsUntilLongBreak} onMinus={() => update('sessionsUntilLongBreak', -1)} onPlus={() => update('sessionsUntilLongBreak', 1)} />
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span>BREAK (min)</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button className="pixel-btn" onClick={() => update('breakDuration', -1)} style={{ padding: '4px 8px', fontSize: '8px' }}>-</button>
-              <span style={{ minWidth: '30px', textAlign: 'center' }}>{settings.breakDuration}</span>
-              <button className="pixel-btn" onClick={() => update('breakDuration', 1)} style={{ padding: '4px 8px', fontSize: '8px' }}>+</button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span>LONG BREAK</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button className="pixel-btn" onClick={() => update('longBreakDuration', -1)} style={{ padding: '4px 8px', fontSize: '8px' }}>-</button>
-              <span style={{ minWidth: '30px', textAlign: 'center' }}>{settings.longBreakDuration}</span>
-              <button className="pixel-btn" onClick={() => update('longBreakDuration', 1)} style={{ padding: '4px 8px', fontSize: '8px' }}>+</button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>SESSIONS/ROUND</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button className="pixel-btn" onClick={() => update('sessionsUntilLongBreak', -1)} style={{ padding: '4px 8px', fontSize: '8px' }}>-</button>
-              <span style={{ minWidth: '30px', textAlign: 'center' }}>{settings.sessionsUntilLongBreak}</span>
-              <button className="pixel-btn" onClick={() => update('sessionsUntilLongBreak', 1)} style={{ padding: '4px 8px', fontSize: '8px' }}>+</button>
-            </div>
-          </div>
-
-          <div style={{ marginTop: '10px', textAlign: 'center', color: '#ff6b35' }}>
+          <div style={{ marginTop: '10px', textAlign: 'center', color: 'var(--accent)' }}>
             SESSION {sessionsCompleted + 1} / {settings.sessionsUntilLongBreak}
           </div>
         </div>
@@ -159,14 +213,32 @@ function SettingsPanel({
   );
 }
 
+function Row({ label, value, onMinus, onPlus }: { label: string; value: number; onMinus: () => void; onPlus: () => void }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+      <span style={{ color: 'var(--text)' }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <button className="pixel-btn" onClick={onMinus} style={{ padding: '4px 8px', fontSize: 'var(--font-size-sm)' }}>-</button>
+        <span style={{ minWidth: '30px', textAlign: 'center', color: 'var(--text)' }}>{value}</span>
+        <button className="pixel-btn" onClick={onPlus} style={{ padding: '4px 8px', fontSize: 'var(--font-size-sm)' }}>+</button>
+      </div>
+    </div>
+  );
+}
+
 // ==================== MAIN PAGE ====================
 export default function Home() {
-  // State
+  // Timer state
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [phase, setPhase] = useState<TimerPhase>('focus');
   const [status, setStatus] = useState<TimerStatus>('idle');
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
+
+  // Theme state
+  const [theme, setTheme] = useState<ThemeId>('crt-retro');
+  const [mode, setMode] = useState<ColorMode>('dark');
+
   const [mounted, setMounted] = useState(false);
 
   // Refs
@@ -174,27 +246,55 @@ export default function Home() {
   const endTimeRef = useRef<number | null>(null);
   const lastSecondRef = useRef<number>(-1);
 
-  // Load settings from localStorage
+  // ---- Load from localStorage ----
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('crt-pomodoro-settings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      const savedSettings = localStorage.getItem('crt-pomodoro-settings');
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
         setSettings(parsed);
         setTimeLeft(parsed.focusDuration * 60);
+      }
+
+      const savedTheme = localStorage.getItem('crt-pomodoro-theme');
+      if (savedTheme && THEMES.some(t => t.id === savedTheme)) {
+        setTheme(savedTheme as ThemeId);
+      }
+
+      const savedMode = localStorage.getItem('crt-pomodoro-mode');
+      if (savedMode === 'light' || savedMode === 'dark') {
+        setMode(savedMode);
       }
     } catch {}
     setMounted(true);
   }, []);
 
-  // Save settings on change
+  // ---- Apply theme to DOM ----
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-mode', mode);
+  }, [theme, mode]);
+
+  // ---- Persist ----
   useEffect(() => {
     if (mounted) {
       localStorage.setItem('crt-pomodoro-settings', JSON.stringify(settings));
     }
   }, [settings, mounted]);
 
-  // Get current phase duration in seconds
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('crt-pomodoro-theme', theme);
+    }
+  }, [theme, mounted]);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('crt-pomodoro-mode', mode);
+    }
+  }, [mode, mounted]);
+
+  // ---- Timer logic ----
   const getPhaseDuration = useCallback((p: TimerPhase): number => {
     switch (p) {
       case 'focus': return settings.focusDuration * 60;
@@ -203,7 +303,6 @@ export default function Home() {
     }
   }, [settings]);
 
-  // Clear interval helper
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -211,7 +310,24 @@ export default function Home() {
     }
   }, []);
 
-  // Start the timer
+  const handlePhaseEnd = useCallback(() => {
+    setStatus('idle');
+    if (phase === 'focus') {
+      const newCompleted = sessionsCompleted + 1;
+      setSessionsCompleted(newCompleted);
+      if (newCompleted % settings.sessionsUntilLongBreak === 0) {
+        setPhase('longBreak');
+        setTimeLeft(settings.longBreakDuration * 60);
+      } else {
+        setPhase('break');
+        setTimeLeft(settings.breakDuration * 60);
+      }
+    } else {
+      setPhase('focus');
+      setTimeLeft(settings.focusDuration * 60);
+    }
+  }, [phase, sessionsCompleted, settings]);
+
   const startTimer = useCallback(() => {
     clearTimer();
     const now = Date.now();
@@ -222,7 +338,6 @@ export default function Home() {
       const remaining = Math.max(0, Math.ceil(((endTimeRef.current || now) - Date.now()) / 1000));
       setTimeLeft(remaining);
 
-      // Tick sound every second
       const currentSec = remaining;
       if (currentSec !== lastSecondRef.current && currentSec > 0) {
         lastSecondRef.current = currentSec;
@@ -235,31 +350,8 @@ export default function Home() {
         handlePhaseEnd();
       }
     }, 100);
-  }, [timeLeft, clearTimer]);
+  }, [timeLeft, clearTimer, handlePhaseEnd]);
 
-  // Handle phase end
-  const handlePhaseEnd = useCallback(() => {
-    setStatus('idle');
-
-    if (phase === 'focus') {
-      const newCompleted = sessionsCompleted + 1;
-      setSessionsCompleted(newCompleted);
-
-      if (newCompleted % settings.sessionsUntilLongBreak === 0) {
-        setPhase('longBreak');
-        setTimeLeft(settings.longBreakDuration * 60);
-      } else {
-        setPhase('break');
-        setTimeLeft(settings.breakDuration * 60);
-      }
-    } else {
-      // Break ended, go back to focus
-      setPhase('focus');
-      setTimeLeft(settings.focusDuration * 60);
-    }
-  }, [phase, sessionsCompleted, settings]);
-
-  // Toggle start/pause
   const toggleTimer = useCallback(() => {
     playClick();
     if (status === 'running') {
@@ -271,7 +363,6 @@ export default function Home() {
     }
   }, [status, clearTimer, startTimer]);
 
-  // Reset timer
   const resetTimer = useCallback(() => {
     playClick();
     clearTimer();
@@ -281,7 +372,6 @@ export default function Home() {
     lastSecondRef.current = -1;
   }, [clearTimer, phase, getPhaseDuration]);
 
-  // Skip phase
   const skipPhase = useCallback(() => {
     playClick();
     clearTimer();
@@ -290,7 +380,7 @@ export default function Home() {
     handlePhaseEnd();
   }, [clearTimer, handlePhaseEnd]);
 
-  // Update document title
+  // ---- Document title ----
   useEffect(() => {
     const mins = Math.floor(timeLeft / 60);
     const secs = timeLeft % 60;
@@ -298,18 +388,18 @@ export default function Home() {
     document.title = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} | ${label}`;
   }, [timeLeft, phase]);
 
-  // Cleanup on unmount
+  // ---- Cleanup ----
   useEffect(() => {
     return () => clearTimer();
   }, [clearTimer]);
 
-  // Format time
+  // ---- Derived values ----
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
   const timeString = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  const phaseLabel = phase === 'focus' ? '[ FOCUS ]' : phase === 'break' ? '[ BREAK ]' : '[ LONG BREAK ]';
+  const phaseLabel = phase === 'focus' ? 'FOCUS' : phase === 'break' ? 'BREAK' : 'LONG BREAK';
+  const phaseLabelColor = phase === 'focus' ? 'var(--primary)' : 'var(--accent)';
 
-  // Session dots
   const dots = Array.from({ length: settings.sessionsUntilLongBreak }, (_, i) => {
     const isFilled = i < (sessionsCompleted % settings.sessionsUntilLongBreak);
     const isCurrent = !isFilled && i === (sessionsCompleted % settings.sessionsUntilLongBreak);
@@ -324,93 +414,113 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <main className="crt-screen" style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      position: 'relative',
-      zIndex: 1,
-    }}>
-      <div style={{
-        maxWidth: '480px',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-      }}>
-        {/* Tomato */}
-        <PixelTomato status={status} phase={phase} />
+    <>
+      {/* Vignette overlay */}
+      <div className="vignette-layer" />
 
-        {/* Phase label */}
+      {/* Main content */}
+      <main
+        className="main-screen"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          position: 'relative',
+          zIndex: 1,
+          backgroundColor: 'var(--bg)',
+          transition: 'background-color 0.3s ease',
+        }}
+      >
         <div style={{
-          fontSize: '10px',
-          color: phase === 'focus' ? '#39ff14' : '#ff6b35',
-          textShadow: phase === 'focus' 
-            ? '0 0 8px #39ff14' 
-            : '0 0 8px #ff6b35',
-          letterSpacing: '4px',
+          maxWidth: '480px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
         }}>
-          {phaseLabel}
-        </div>
+          {/* Tomato */}
+          <PixelTomato status={status} phase={phase} />
 
-        {/* Timer display */}
-        <div className="pixel-border pixel-border-inner" style={{
-          textAlign: 'center',
-          padding: '24px 32px',
-          minWidth: '280px',
-        }}>
-          <div className="glow-text" style={{
-            fontSize: 'clamp(28px, 8vw, 48px)',
-            lineHeight: 1.2,
-            letterSpacing: '4px',
+          {/* Phase label */}
+          <div style={{
+            fontSize: 'var(--font-size-md)',
+            color: phaseLabelColor,
+            textShadow: `0 0 8px ${phaseLabelColor}`,
+            letterSpacing: 'var(--letter-spacing)',
           }}>
-            {timeString}
+            [ {phaseLabel} ]
+          </div>
+
+          {/* Timer display */}
+          <div className="pixel-border pixel-border-inner" style={{
+            textAlign: 'center',
+            padding: '24px 32px',
+            minWidth: '280px',
+          }}>
+            <div className="glow-text" style={{
+              fontSize: 'clamp(var(--font-size-lg), 8vw, var(--font-size-xl))',
+              lineHeight: 1.2,
+              letterSpacing: 'var(--timer-letter-spacing)',
+              color: 'var(--text)',
+              textShadow: 'var(--text-shadow)',
+            }}>
+              {timeString}
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}>
+            <button className="pixel-btn" onClick={toggleTimer} style={{ fontSize: 'var(--font-size-sm)' }}>
+              {status === 'running' ? 'PAUSE' : 'START'}
+            </button>
+            <button className="pixel-btn pixel-btn-accent" onClick={resetTimer} style={{ fontSize: 'var(--font-size-sm)' }}>
+              RESET
+            </button>
+            <button className="pixel-btn pixel-btn-accent" onClick={skipPhase} style={{ fontSize: 'var(--font-size-sm)' }}>
+              SKIP
+            </button>
+          </div>
+
+          {/* Session dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2px' }}>
+            {dots}
+          </div>
+
+          {/* Settings panel */}
+          <SettingsPanel
+            settings={settings}
+            onSettingsChange={setSettings}
+            sessionsCompleted={sessionsCompleted % settings.sessionsUntilLongBreak}
+          />
+
+          {/* Theme picker */}
+          <ThemePicker
+            theme={theme}
+            mode={mode}
+            onThemeChange={setTheme}
+            onModeToggle={() => setMode(m => m === 'dark' ? 'light' : 'dark')}
+          />
+
+          {/* Footer */}
+          <div style={{
+            fontSize: 'var(--font-size-xs)',
+            opacity: 'var(--opacity-dim)',
+            marginTop: '20px',
+            color: 'var(--text)',
+          }}>
+            POMODORO v1.1
           </div>
         </div>
-
-        {/* Controls */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}>
-          <button className="pixel-btn" onClick={toggleTimer} style={{ fontSize: '8px' }}>
-            {status === 'running' ? 'PAUSE' : 'START'}
-          </button>
-          <button className="pixel-btn pixel-btn-accent" onClick={resetTimer} style={{ fontSize: '8px' }}>
-            RESET
-          </button>
-          <button className="pixel-btn pixel-btn-accent" onClick={skipPhase} style={{ fontSize: '8px' }}>
-            SKIP
-          </button>
-        </div>
-
-        {/* Session dots */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2px' }}>
-          {dots}
-        </div>
-
-        {/* Settings */}
-        <SettingsPanel
-          settings={settings}
-          onSettingsChange={setSettings}
-          sessionsCompleted={sessionsCompleted % settings.sessionsUntilLongBreak}
-        />
-
-        {/* Footer */}
-        <div style={{
-          fontSize: '6px',
-          opacity: 0.3,
-          marginTop: '20px',
-        }}>
-          CRT POMODORO v1.0
-        </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

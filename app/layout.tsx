@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "CRT Pomodoro",
-  description: "Retro pixel-art Pomodoro timer with CRT aesthetics",
+  description: "Retro pixel-art Pomodoro timer with multiple themes",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="crt-overlay crt-vignette antialiased">
+      <body className="antialiased">
         {children}
       </body>
     </html>
