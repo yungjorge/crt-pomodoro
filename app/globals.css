@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --glow: #39ff14;
+  --accent: #ff6b35;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: 'Press Start 2P', monospace;
+  color: var(--glow);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Pixel grid background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
+  background-size: 4px 4px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CRT scanline overlay - full screen */
+.crt-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* CRT vignette */
+.crt-vignette::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.6) 100%);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Screen curve illusion */
+.crt-screen {
+  border-radius: 8px;
+}
+
+/* Glow text utility */
+.glow-text {
+  color: var(--glow);
+  text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14, 0 0 40px #39ff14;
+}
+
+.glow-text-accent {
+  color: var(--accent);
+  text-shadow: 0 0 10px #ff6b35, 0 0 20px #ff6b35;
+}
+
+/* Pixel button base */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 10px 16px;
+  border: 3px solid var(--glow);
+  background: transparent;
+  color: var(--glow);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  position: relative;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pixel-btn:hover {
+  background: var(--glow);
+  color: var(--bg);
+  box-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14, inset 0 0 15px rgba(57, 255, 20, 0.3);
+}
+
+.pixel-btn:active {
+  transform: scale(0.95);
+}
+
+.pixel-btn-accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pixel-btn-accent:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 15px #ff6b35, 0 0 30px #ff6b35, inset 0 0 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Pixel border */
+.pixel-border {
+  border: 3px solid var(--glow);
+  box-shadow: 
+    0 0 10px rgba(57, 255, 20, 0.3),
+    inset 0 0 10px rgba(57, 255, 20, 0.1);
+  padding: 20px;
+  position: relative;
+}
+
+/* Dithered corner decorations */
+.pixel-border::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg);
+  border-right: 3px solid var(--glow);
+  border-bottom: 3px solid var(--glow);
+}
+
+.pixel-border::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg);
+  border-left: 3px solid var(--glow);
+  border-bottom: 3px solid var(--glow);
+}
+
+/* Inner corner dots */
+.pixel-border-inner::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg);
+  border-right: 3px solid var(--glow);
+  border-top: 3px solid var(--glow);
+}
+
+.pixel-border-inner::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg);
+  border-left: 3px solid var(--glow);
+  border-top: 3px solid var(--glow);
+}
+
+/* Number input styling */
+.pixel-input {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  background: transparent;
+  border: 2px solid var(--glow);
+  color: var(--glow);
+  padding: 6px 10px;
+  width: 60px;
+  text-align: center;
+  min-height: 44px;
+}
+
+.pixel-input:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+/* Session dot */
+.session-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--glow);
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.session-dot.filled {
+  background: var(--glow);
+  box-shadow: 0 0 8px var(--glow);
+}
+
+.session-dot.current {
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 4px var(--glow); }
+  50% { box-shadow: 0 0 15px var(--glow), 0 0 25px var(--glow); }
+}
+
+/* Spinner for number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 30px;
+}
+
+/* Tomato bounce animation */
+@keyframes tomato-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes tomato-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes tomato-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.tomato-bounce {
+  animation: tomato-bounce 0.6s ease-in-out infinite;
+}
+
+.tomato-spin-flash {
+  animation: tomato-spin 0.5s ease-in-out infinite, tomato-flash 0.5s ease-in-out infinite;
+}
