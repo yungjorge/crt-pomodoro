@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 // ==================== TYPES ====================
 type TimerPhase = 'focus' | 'break' | 'longBreak';
 type TimerStatus = 'idle' | 'running' | 'paused';
-type ThemeId = 'crt-retro' | 'old-mac' | 'digital-clock' | 'windows-xp' | 'cyberpunk' | 'modern-sleek';
+type ThemeId = 'crt-retro' | 'old-mac' | 'digital-clock' | 'windows-xp' | 'cyberpunk' | 'modern-sleek' | 'asian-ninja';
 type ColorMode = 'dark' | 'light';
 
 interface Settings {
@@ -36,6 +36,7 @@ const THEMES: ThemeMeta[] = [
   { id: 'windows-xp', label: 'Win XP', emoji: '🪟' },
   { id: 'cyberpunk', label: 'Cyberpunk', emoji: '🌆' },
   { id: 'modern-sleek', label: 'Modern', emoji: '✨' },
+  { id: 'asian-ninja', label: 'Ninja', emoji: '🥷' },
 ];
 
 // ==================== AUDIO ====================
@@ -63,30 +64,267 @@ function playPhaseComplete() {
 }
 function playClick() { playBeep(200, 0.03, 'square', 0.05); }
 
-// ==================== PIXEL TOMATO SVG ====================
-function PixelTomato({ status, phase }: { status: TimerStatus; phase: TimerPhase }) {
-  const animClass = status === 'running' ? 'tomato-bounce' : '';
+// ==================== THEME MASCOT ART ====================
+function Mascot({ status, theme }: { status: TimerStatus; theme: ThemeId }) {
+  const running = status === 'running';
+  const ended = status === 'idle' && false; // handled via status
+  const animClass = running ? 'mascot-running' : '';
 
-  return (
-    <div className={`${animClass} inline-block`} style={{ imageRendering: 'pixelated' }}>
-      <svg width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <rect x="7" y="0" width="2" height="3" fill="#39ff14" />
-        <rect x="3" y="3" width="10" height="10" fill="#ff2d2d" />
-        <rect x="2" y="4" width="1" height="8" fill="#ff2d2d" />
-        <rect x="13" y="4" width="1" height="8" fill="#ff2d2d" />
-        <rect x="4" y="2" width="8" height="2" fill="#ff2d2d" />
-        <rect x="5" y="1" width="6" height="1" fill="#cc0000" />
-        <rect x="5" y="5" width="2" height="2" fill="#ff6b6b" />
-        <rect x="6" y="3" width="2" height="1" fill="#ff6b6b" />
-        <rect x="6" y="2" width="1" height="1" fill="#cc0000" />
-        <rect x="9" y="1" width="1" height="1" fill="#cc0000" />
-        <rect x="6" y="7" width="1" height="1" fill="#0a0a0a" />
-        <rect x="9" y="7" width="1" height="1" fill="#0a0a0a" />
-        <rect x="6" y="10" width="4" height="1" fill="#0a0a0a" />
-        <rect x="7" y="11" width="2" height="1" fill="#0a0a0a" />
-        <rect x="7" y="1" width="2" height="1" fill="#39ff14" opacity="0.6" />
-      </svg>
+  const w = 64, h = 64;
+
+  // Shared wrapper
+  const wrap = (children: React.ReactNode, extraClass = '') => (
+    <div className={`${animClass} ${extraClass}`.trim()} style={{ imageRendering: 'pixelated', display: 'inline-block' }}>
+      {children}
     </div>
+  );
+
+  switch (theme) {
+    // ─── CRT Retro: Old TV with rabbit ears ───
+    case 'crt-retro':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          {/* Rabbit ears */}
+          <rect x="5" y="0" width="1" height="3" fill="#888" />
+          <rect x="10" y="0" width="1" height="3" fill="#888" />
+          <rect x="4" y="3" width="1" height="1" fill="#888" />
+          <rect x="11" y="3" width="1" height="1" fill="#888" />
+          {/* TV body */}
+          <rect x="3" y="4" width="10" height="7" fill="#333" />
+          <rect x="2" y="3" width="12" height="8" fill="#555" />
+          <rect x="3" y="4" width="10" height="7" fill="#39ff14" opacity="0.15" />
+          {/* Screen inner glow */}
+          <rect x="4" y="5" width="8" height="5" fill="#39ff14" opacity="0.3" />
+          <rect x="5" y="6" width="6" height="3" fill="#0a0a0a" />
+          {/* Screen content (blinking cursor) */}
+          <rect x="7" y="7" width="2" height="1" fill="#39ff14" />
+          {/* Legs */}
+          <rect x="4" y="11" width="2" height="2" fill="#555" />
+          <rect x="10" y="11" width="2" height="2" fill="#555" />
+          {/* Power light */}
+          <rect x="12" y="9" width="1" height="1" fill="#39ff14" />
+        </svg>
+      );
+
+    // ─── Old Mac: Classic Macintosh ───
+    case 'old-mac':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          {/* Body - all-in-one Mac shape */}
+          <rect x="3" y="0" width="10" height="9" fill="#c0c0c0" />
+          <rect x="2" y="1" width="12" height="8" fill="#d4d4d4" />
+          {/* Screen bezel */}
+          <rect x="3" y="2" width="10" height="7" fill="#333" />
+          {/* Screen */}
+          <rect x="4" y="3" width="8" height="5" fill="#ffffff" />
+          {/* Happy Mac face on screen */}
+          <rect x="6" y="4" width="1" height="1" fill="#000" />
+          <rect x="9" y="4" width="1" height="1" fill="#000" />
+          <rect x="6" y="6" width="4" height="1" fill="#000" />
+          <rect x="7" y="5" width="2" height="1" fill="#000" />
+          {/* Floppy slot */}
+          <rect x="5" y="7" width="6" height="1" fill="#888" />
+          {/* Base / chin */}
+          <rect x="3" y="9" width="10" height="3" fill="#b0b0b0" />
+          <rect x="2" y="9" width="12" height="3" fill="#c0c0c0" />
+          {/* Apple logo */}
+          <rect x="7" y="10" width="2" height="1" fill="#333" />
+          {/* Rainbow stripe */}
+          <rect x="2" y="12" width="2" height="1" fill="#ff4444" />
+          <rect x="4" y="12" width="2" height="1" fill="#ffaa00" />
+          <rect x="6" y="12" width="2" height="1" fill="#44ff44" />
+          <rect x="8" y="12" width="2" height="1" fill="#4444ff" />
+          <rect x="10" y="12" width="2" height="1" fill="#aa44ff" />
+          <rect x="12" y="12" width="2" height="1" fill="#ff44ff" />
+        </svg>
+      );
+
+    // ─── Digital Clock: Alarm clock with bells ───
+    case 'digital-clock':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          {/* Bell left */}
+          <rect x="2" y="0" width="3" height="3" fill="#cc0000" />
+          <rect x="3" y="0" width="1" height="4" fill="#ff0000" />
+          {/* Bell right */}
+          <rect x="11" y="0" width="3" height="3" fill="#cc0000" />
+          <rect x="12" y="0" width="1" height="4" fill="#ff0000" />
+          {/* Hammer */}
+          <rect x="6" y="0" width="4" height="2" fill="#ff4444" />
+          {/* Clock body */}
+          <rect x="3" y="3" width="10" height="8" fill="#1a1a1a" />
+          <rect x="2" y="4" width="12" height="7" fill="#2a2a2a" />
+          {/* Screen */}
+          <rect x="4" y="4" width="8" height="5" fill="#000000" />
+          {/* Time display */}
+          <rect x="5" y="5" width="2" height="3" fill="#ff0000" opacity="0.8" />
+          <rect x="8" y="5" width="2" height="3" fill="#ff0000" opacity="0.8" />
+          <rect x="6" y="7" width="1" height="1" fill="#ff0000" opacity="0.8" />
+          {/* Colon */}
+          <rect x="7" y="5" width="1" height="1" fill="#ff0000" />
+          <rect x="7" y="7" width="1" height="1" fill="#ff0000" />
+          {/* Legs */}
+          <rect x="5" y="11" width="2" height="2" fill="#333" />
+          <rect x="9" y="11" width="2" height="2" fill="#333" />
+          {/* Bottom bar */}
+          <rect x="4" y="10" width="8" height="1" fill="#444" />
+        </svg>
+      );
+
+    // ─── Windows XP: Classic Window logo ───
+    case 'windows-xp':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          {/* Window pane 1 - red */}
+          <rect x="2" y="2" width="5" height="5" fill="#ff4444" rx="1" />
+          {/* Window pane 2 - green */}
+          <rect x="9" y="2" width="5" height="5" fill="#44cc44" rx="1" />
+          {/* Window pane 3 - blue */}
+          <rect x="2" y="9" width="5" height="5" fill="#4488ff" rx="1" />
+          {/* Window pane 4 - yellow */}
+          <rect x="9" y="9" width="5" height="5" fill="#ffcc00" rx="1" />
+          {/* Inner highlights */}
+          <rect x="3" y="3" width="3" height="3" fill="#fff" opacity="0.3" />
+          <rect x="10" y="3" width="3" height="3" fill="#fff" opacity="0.3" />
+          <rect x="3" y="10" width="3" height="3" fill="#fff" opacity="0.3" />
+          <rect x="10" y="10" width="3" height="3" fill="#fff" opacity="0.3" />
+        </svg>
+      );
+
+    // ─── Cyberpunk: Neon katana blade ───
+    case 'cyberpunk':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className={running ? 'katana-running' : ''}>
+          {/* Blade */}
+          <rect x="2" y="6" width="12" height="2" fill="#00ffff" />
+          <rect x="2" y="5" width="14" height="1" fill="#ff00ff" opacity="0.6" />
+          <rect x="2" y="8" width="14" height="1" fill="#ff00ff" opacity="0.6" />
+          {/* Blade edge highlight */}
+          <rect x="3" y="6" width="10" height="1" fill="#fff" opacity="0.3" />
+          {/* Blade tip */}
+          <rect x="14" y="6" width="2" height="2" fill="#00ffff" />
+          <rect x="15" y="7" width="1" height="1" fill="#ff00ff" />
+          {/* Tsuba (guard) */}
+          <rect x="0" y="4" width="2" height="6" fill="#ff00ff" />
+          <rect x="0" y="3" width="3" height="1" fill="#ff66ff" />
+          <rect x="0" y="10" width="3" height="1" fill="#ff66ff" />
+          {/* Tsuka (handle) */}
+          <rect x="0" y="11" width="2" height="3" fill="#222" />
+          {/* Handle wrap */}
+          <rect x="0" y="11" width="2" height="1" fill="#00ffff" opacity="0.5" />
+          <rect x="0" y="13" width="2" height="1" fill="#00ffff" opacity="0.5" />
+          {/* Pommel */}
+          <rect x="0" y="14" width="2" height="1" fill="#ff00ff" />
+        </svg>,
+        ''
+      );
+
+    // ─── Modern Sleek: Minimal geometric circle ───
+    case 'modern-sleek': {
+      const p = 'var(--primary)';
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          {/* Outer ring */}
+          <rect x="1" y="1" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="7" y="1" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="13" y="1" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="1" y="7" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="13" y="7" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="1" y="13" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="7" y="13" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="13" y="13" width="2" height="2" rx="1" fill={p} opacity="0.3" />
+          <rect x="3" y="1" width="10" height="1" fill={p} opacity="0.2" />
+          <rect x="3" y="14" width="10" height="1" fill={p} opacity="0.2" />
+          <rect x="1" y="3" width="1" height="10" fill={p} opacity="0.2" />
+          <rect x="14" y="3" width="1" height="10" fill={p} opacity="0.2" />
+          {/* Inner play button / pomodoro circle */}
+          <rect x="5" y="5" width="6" height="6" rx="3" fill={p} opacity="0.15" />
+          {/* Play button triangle */}
+          <rect x="7" y="6" width="1" height="4" fill={p} opacity="0.7" />
+          <rect x="8" y="7" width="1" height="2" fill={p} opacity="0.7" />
+        </svg>
+      );
+    }
+
+    // ─── Asian Ninja: Ninja with shuriken + sakura ───
+    case 'asian-ninja':
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className={running ? 'ninja-running' : ''}>
+          {/* Head wrap (zukin) */}
+          <rect x="5" y="1" width="6" height="5" fill="#1a1a2e" />
+          {/* Face mask slit */}
+          <rect x="6" y="3" width="4" height="2" fill="#2d2d4a" />
+          {/* Eyes */}
+          <rect x="6" y="3" width="1" height="1" fill="#ffffff" />
+          <rect x="9" y="3" width="1" height="1" fill="#ffffff" />
+          {/* Pupils */}
+          <rect x="6" y="3" width="1" height="1" fill="#ff0000" opacity="0.7" />
+          <rect x="9" y="3" width="1" height="1" fill="#ff0000" opacity="0.7" />
+          {/* Headband */}
+          <rect x="5" y="2" width="6" height="1" fill="#ee4266" />
+          {/* Headband tails */}
+          <rect x="10" y="2" width="2" height="1" fill="#ee4266" />
+          <rect x="11" y="3" width="1" height="2" fill="#ee4266" />
+          {/* Body */}
+          <rect x="5" y="6" width="6" height="5" fill="#1a1a2e" />
+          {/* Belt/obi */}
+          <rect x="5" y="8" width="6" height="1" fill="#ffd700" />
+          {/* Left arm (throwing pose) */}
+          <rect x="2" y="6" width="3" height="2" fill="#1a1a2e" />
+          <rect x="1" y="7" width="2" height="1" fill="#2d2d4a" />
+          {/* Right arm */}
+          <rect x="11" y="6" width="3" height="2" fill="#1a1a2e" />
+          {/* Shuriken in right hand */}
+          <rect x="13" y="5" width="2" height="2" fill="#ffd700" />
+          <rect x="14" y="4" width="2" height="1" fill="#ffd700" />
+          <rect x="14" y="7" width="2" height="1" fill="#ffd700" />
+          <rect x="15" y="3" width="1" height="2" fill="#ffd700" />
+          <rect x="15" y="7" width="1" height="2" fill="#ffd700" />
+          {/* Legs */}
+          <rect x="6" y="11" width="2" height="4" fill="#1a1a2e" />
+          <rect x="8" y="11" width="2" height="4" fill="#1a1a2e" />
+          {/* Tabi boots */}
+          <rect x="6" y="14" width="2" height="2" fill="#333" />
+          <rect x="8" y="14" width="2" height="2" fill="#333" />
+          {/* Sakura petals floating */}
+          <rect x="0" y="0" width="2" height="2" fill="#ffb7c5" opacity="0.6" />
+          <rect x="13" y="0" width="1" height="1" fill="#ffb7c5" opacity="0.4" />
+          <rect x="2" y="12" width="1" height="1" fill="#ffb7c5" opacity="0.5" />
+          <rect x="14" y="13" width="2" height="2" fill="#ffb7c5" opacity="0.3" />
+        </svg>,
+        ''
+      );
+
+    default:
+      return wrap(
+        <svg width={w} height={h} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="8" height="8" fill="var(--primary)" />
+        </svg>
+      );
+  }
+}
+
+// ==================== SAKURA PARTICLES (Ninja theme) ====================
+function SakuraParticles({ theme, running }: { theme: ThemeId; running: boolean }) {
+  if (theme !== 'asian-ninja' || !running) return null;
+  return (
+    <>
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className="sakura-particle"
+          style={{
+            left: `${10 + i * 16}%`,
+            top: `${-5 + (i % 3) * 8}px`,
+            animationDelay: `${i * 0.3}s`,
+            animationDuration: `${2 + (i % 3) * 0.5}s`,
+            fontSize: '8px',
+          }}
+        >
+          🌸
+        </span>
+      ))}
+    </>
   );
 }
 
@@ -411,12 +649,17 @@ export default function Home() {
     );
   });
 
+  const isRunning = status === 'running';
+
   if (!mounted) return null;
 
   return (
     <>
       {/* Vignette overlay */}
       <div className="vignette-layer" />
+
+      {/* Sakura particles (ninja theme only) */}
+      <SakuraParticles theme={theme} running={isRunning} />
 
       {/* Main content */}
       <main
@@ -442,8 +685,8 @@ export default function Home() {
           alignItems: 'center',
           gap: '20px',
         }}>
-          {/* Tomato */}
-          <PixelTomato status={status} phase={phase} />
+          {/* Theme Mascot */}
+          <Mascot status={status} theme={theme} />
 
           {/* Phase label */}
           <div style={{
@@ -480,7 +723,7 @@ export default function Home() {
             justifyContent: 'center',
           }}>
             <button className="pixel-btn" onClick={toggleTimer} style={{ fontSize: 'var(--font-size-sm)' }}>
-              {status === 'running' ? 'PAUSE' : 'START'}
+              {isRunning ? 'PAUSE' : 'START'}
             </button>
             <button className="pixel-btn pixel-btn-accent" onClick={resetTimer} style={{ fontSize: 'var(--font-size-sm)' }}>
               RESET
@@ -512,12 +755,19 @@ export default function Home() {
 
           {/* Footer */}
           <div style={{
-            fontSize: 'var(--font-size-xs)',
-            opacity: 'var(--opacity-dim)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '4px',
             marginTop: '20px',
-            color: 'var(--text)',
           }}>
-            POMODORO v1.1
+            <div style={{
+              fontSize: 'var(--font-size-xs)',
+              opacity: 'var(--opacity-dim)',
+              color: 'var(--text)',
+            }}>
+              for jabbawockee only
+            </div>
           </div>
         </div>
       </main>

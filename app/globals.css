@@ -39,7 +39,6 @@
   --letter-spacing: 4px;
   --timer-letter-spacing: 4px;
   --opacity-dim: 0.3;
-  /* Overlays */
   --scanlines: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px);
   --vignette: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
   --grid: linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
@@ -47,6 +46,41 @@
 }
 
 /* ========== THEME DEFINITIONS ========== */
+
+/* --- CRT Retro - Dark --- */
+[data-theme="crt-retro"][data-mode="dark"] {
+  --bg: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-input: rgba(57, 255, 20, 0.05);
+  --text: #39ff14;
+  --text-secondary: #ff6b35;
+  --primary: #39ff14;
+  --primary-rgb: 57, 255, 20;
+  --accent: #ff6b35;
+  --accent-rgb: 255, 107, 53;
+  --border-color: #39ff14;
+  --border-width: 3px;
+  --border-radius: 1px;
+  --border-style: solid;
+  --font-family: 'Press Start 2P', monospace;
+  --font-size-xs: 6px;
+  --font-size-sm: 8px;
+  --font-size-md: 10px;
+  --font-size-lg: 28px;
+  --font-size-xl: 48px;
+  --text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+  --box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+  --box-shadow-inset: inset 0 0 10px rgba(var(--primary-rgb), 0.1);
+  --btn-hover-text: #0a0a0a;
+  --btn-transform: scale(0.95);
+  --letter-spacing: 4px;
+  --timer-letter-spacing: 4px;
+  --opacity-dim: 0.3;
+  --scanlines: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px);
+  --vignette: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
+  --grid: linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
+  --grid-size: 4px;
+}
 
 /* --- CRT Retro - Light --- */
 [data-theme="crt-retro"][data-mode="light"] {
@@ -60,6 +94,15 @@
   --accent: #cc4400;
   --accent-rgb: 204, 68, 0;
   --border-color: #1a7a0a;
+  --border-width: 3px;
+  --border-radius: 1px;
+  --border-style: solid;
+  --font-family: 'Press Start 2P', monospace;
+  --font-size-xs: 6px;
+  --font-size-sm: 8px;
+  --font-size-md: 10px;
+  --font-size-lg: 28px;
+  --font-size-xl: 48px;
   --btn-hover-text: #e8ffe8;
   --text-shadow: 0 0 8px rgba(26,122,10,0.4), 0 0 15px rgba(26,122,10,0.2);
   --scanlines: none;
@@ -418,6 +461,76 @@
   --grid-size: 0px;
 }
 
+/* --- 🌸 Asian Ninja (Jabbawockee) - Dark --- */
+[data-theme="asian-ninja"][data-mode="dark"] {
+  --bg: #0d0d1a;
+  --bg-secondary: #16162a;
+  --bg-input: rgba(238, 66, 102, 0.05);
+  --text: #ff6b8a;
+  --text-secondary: #ffd700;
+  --primary: #ee4266;
+  --primary-rgb: 238, 66, 102;
+  --accent: #ffd700;
+  --accent-rgb: 255, 215, 0;
+  --border-color: #ee4266;
+  --border-width: 3px;
+  --border-radius: 2px;
+  --border-style: solid;
+  --font-family: 'Press Start 2P', monospace;
+  --font-size-xs: 6px;
+  --font-size-sm: 8px;
+  --font-size-md: 10px;
+  --font-size-lg: 28px;
+  --font-size-xl: 48px;
+  --text-shadow: 0 0 10px #ee4266, 0 0 20px #ee4266, 0 0 40px #ee4266;
+  --box-shadow: 0 0 12px rgba(238,66,102,0.3);
+  --box-shadow-inset: inset 0 0 12px rgba(238,66,102,0.08);
+  --btn-hover-text: #0d0d1a;
+  --btn-transform: scale(0.95);
+  --letter-spacing: 3px;
+  --timer-letter-spacing: 4px;
+  --opacity-dim: 0.3;
+  --scanlines: none;
+  --vignette: radial-gradient(ellipse at center, transparent 55%, rgba(13,13,26,0.8) 100%);
+  --grid: linear-gradient(rgba(238,66,102,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.04) 1px, transparent 1px);
+  --grid-size: 4px;
+}
+
+/* --- 🌸 Asian Ninja (Jabbawockee) - Light --- */
+[data-theme="asian-ninja"][data-mode="light"] {
+  --bg: #fff5f0;
+  --bg-secondary: #ffe8e0;
+  --bg-input: rgba(200, 50, 80, 0.04);
+  --text: #cc3355;
+  --text-secondary: #b8960f;
+  --primary: #cc3355;
+  --primary-rgb: 204, 51, 85;
+  --accent: #b8960f;
+  --accent-rgb: 184, 150, 15;
+  --border-color: #cc3355;
+  --border-width: 3px;
+  --border-radius: 2px;
+  --border-style: solid;
+  --font-family: 'Press Start 2P', monospace;
+  --font-size-xs: 6px;
+  --font-size-sm: 8px;
+  --font-size-md: 10px;
+  --font-size-lg: 28px;
+  --font-size-xl: 48px;
+  --text-shadow: 0 0 8px rgba(204,51,85,0.3);
+  --box-shadow: 0 0 8px rgba(204,51,85,0.12);
+  --box-shadow-inset: inset 0 0 8px rgba(204,51,85,0.04);
+  --btn-hover-text: #fff5f0;
+  --btn-transform: scale(0.95);
+  --letter-spacing: 3px;
+  --timer-letter-spacing: 4px;
+  --opacity-dim: 0.3;
+  --scanlines: none;
+  --vignette: none;
+  --grid: linear-gradient(rgba(204,51,85,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(184,150,15,0.05) 1px, transparent 1px);
+  --grid-size: 4px;
+}
+
 /* ========== BASE STYLES ========== */
 html {
   min-height: 100%;
@@ -474,10 +587,47 @@ body::after {
   text-shadow: var(--text-shadow);
 }
 
-.glow-text-accent {
-  color: var(--accent);
-  text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+/* ========== MASCOT ANIMATIONS ========== */
+@keyframes mascot-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
+
+@keyframes mascot-spin-flash {
+  0% { transform: rotate(0deg) scale(1); opacity: 1; }
+  25% { transform: rotate(90deg) scale(1.1); opacity: 0.6; }
+  50% { transform: rotate(180deg) scale(1); opacity: 1; }
+  75% { transform: rotate(270deg) scale(1.1); opacity: 0.6; }
+  100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+
+@keyframes ninja-vanish {
+  0%, 100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  50% { opacity: 0.3; transform: translateY(-8px) rotate(10deg); }
+}
+
+@keyframes shuriken-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sword-slash {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes katana-glow {
+  0%, 100% { filter: drop-shadow(0 0 3px #ff00ff); }
+  50% { filter: drop-shadow(0 0 12px #ff00ff) drop-shadow(0 0 20px #00ffff); }
+}
+
+.mascot-idle { }
+.mascot-running { animation: mascot-bounce 0.6s ease-in-out infinite; }
+.mascot-ended { animation: mascot-spin-flash 0.5s ease-in-out infinite; }
+.ninja-running { animation: ninja-vanish 0.4s ease-in-out infinite; }
+.shuriken-running { animation: shuriken-spin 0.3s linear infinite; }
+.katana-running { animation: sword-slash 1s ease-in-out infinite, katana-glow 1s ease-in-out infinite; }
+.clock-running { animation: mascot-bounce 0.8s ease-in-out infinite; }
 
 /* ========== BUTTONS ========== */
 .pixel-btn {
@@ -532,7 +682,6 @@ body::after {
   transition: border-radius 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Corner decorations (hidden on rounded themes) */
 .pixel-border::before {
   content: '';
   position: absolute;
@@ -600,12 +749,6 @@ body::after {
   box-shadow: var(--box-shadow);
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  opacity: 1;
-  height: 30px;
-}
-
 /* ========== SESSION DOTS ========== */
 .session-dot {
   width: 16px;
@@ -629,33 +772,6 @@ input[type="number"]::-webkit-outer-spin-button {
 @keyframes pulse-dot {
   0%, 100% { box-shadow: 0 0 4px var(--primary); }
   50% { box-shadow: var(--box-shadow), 0 0 25px var(--primary); }
-}
-
-/* ========== ANIMATIONS ========== */
-@keyframes tomato-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes tomato-spin {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(90deg) scale(1.1); }
-  50% { transform: rotate(180deg) scale(1); }
-  75% { transform: rotate(270deg) scale(1.1); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-@keyframes tomato-flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.tomato-bounce {
-  animation: tomato-bounce 0.6s ease-in-out infinite;
-}
-
-.tomato-spin-flash {
-  animation: tomato-spin 0.5s ease-in-out infinite, tomato-flash 0.5s ease-in-out infinite;
 }
 
 /* ========== THEME SELECTOR ========== */
@@ -710,4 +826,19 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .mode-toggle.light::after {
   transform: translateX(24px);
+}
+
+/* ========== NINJA SAKURA PARTICLES ========== */
+@keyframes sakura-fall {
+  0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(60px) translateX(15px) rotate(180deg); opacity: 0; }
+}
+
+.sakura-particle {
+  position: absolute;
+  font-size: 10px;
+  animation: sakura-fall 2s ease-in-out infinite;
+  pointer-events: none;
 }
